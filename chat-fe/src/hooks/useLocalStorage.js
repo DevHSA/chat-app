@@ -1,21 +1,24 @@
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from "react";
 
-const PREFIX = 'chat-app-'
-
+const PREFIX = "chat-app-";
 
 export default function useLocalStorage(key, initialValue) {
+  const prefixedKey = PREFIX + key;
 
-    const prefixedKey = PREFIX + key
+  const [value, setValue] = useState(() => {
+    const jsonValue = localStorage.getItem(prefixedKey);
+    console.log(jsonValue);
+    if (jsonValue ) return JSON.parse(jsonValue);
+    if (typeof initialValue === 'function') {
+      return initialValue();
+    } else {
+      return initialValue;
+    }
+  });
 
-    const [value,setValue] = useState( () => {
+  useEffect(() => {
+    localStorage.setItem(prefixedKey, JSON.stringify(value));
+  }, [prefixedKey, value]);
 
-        const jsonValue = localStorage.getItem(prefixedKey)
-        if(jsonValue) return JSON.parse(jsonValue)
-
-    } )
-
-    
-
-
-
+  return [value, setValue];
 }
